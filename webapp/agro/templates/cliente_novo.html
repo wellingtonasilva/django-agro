@@ -86,11 +86,11 @@
     <!-- Page Content-->
     <div id="page_content">
         <div id="page_content_inner">
-            <h3 class="heading_b uk-margin-bottom"><a href="listagem.html">Listagem de Usuários</a>><span style="font-weight: bold;">Novo
+            <h3 class="heading_b uk-margin-bottom"><a href="/agro/listagem">Listagem de Usuários</a>><span style="font-weight: bold;">Novo
                     Usuário</span></h3>
             <form id="frm-add" method="post" action="/agro/cliente/add">
+                <input type="hidden" id="id" name="id" value="-1" />
                 {% csrf_token %}
-
                 <!-- Dados Cadastrais -->
                 <div class="md-card">
                     <div class="md-card-content">
