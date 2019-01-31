@@ -2,6 +2,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
+from django.db.models import Q
+from django.core.paginator import Paginator
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -20,8 +22,23 @@ def principal(request):
 
 @login_required(login_url='/agro')
 def listagem(request):
-    list_cliente = Cliente.objects.order_by('cpf')
-    return render(request, 'listagem.html', {'list_cliente': list_cliente})
+    list_cliente = []
+    page = request.GET.get('page')
+    if page is None:
+        page = 1
+    if request.method == 'POST':
+        listagem_search = request.POST['listagem_search']
+        try:
+            list_cliente = Cliente.objects.filter(
+                Q(cpf__contains=listagem_search) | Q(nome_completo__contains=listagem_search)
+            )
+        except Cliente.DoesNotExist:
+            pass
+    else:
+        list_cliente = Cliente.objects.order_by('cpf')
+    paginator = Paginator(list_cliente, 5)
+    clientes = paginator.get_page(page)
+    return render(request, 'listagem.html', {'list_cliente': clientes, 'num_page': page})
 
 
 @login_required(login_url='/agro')
@@ -121,23 +138,6 @@ def check_login(request):
         return HttpResponseRedirect('/agro/listagem')
     else:
         return render(request, 'login.html', {})
-
-
-# @api_view(['GET', 'POST'])
-# def check_login(request):
-#     username = request.POST['username']
-#     password = request.POST['password']
-#     user = authenticate(request, username=username, password=password)
-#     if user is not None:
-#         login(request, user)
-#         # Redirect to a success page.
-#         return HttpResponseRedirect('/agro/listagem')
-#     else:
-#     # Return an 'invalid login' error message
-#
-#     print(request.POST['username'])
-#     print(request.POST['password'])
-#     return Response('Passed', status=status.HTTP_200_OK)
 
 
 @api_view(['GET', 'POST'])

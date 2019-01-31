@@ -91,18 +91,21 @@
             <h3 class="heading_b uk-margin-bottom">Listagem de Clientes</h3>
 
             <!-- Filtro -->
-            <div class="md-card">
-                <div class="md-card-content">
-                    <div class="uk-grid" data-uk-grid-margin="">
-                        <div class="uk-width-medium-1-1 uk-row-first">
-                            <label for="product_search_name">Pesquisar por CPF ou Nome</label>
-                            <input type="text" class="md-input" id="product_search_name">
+            <form id="frm-search" method="post" action="/agro/listagem">
+                {% csrf_token %}
+                <div class="md-card">
+                    <div class="md-card-content">
+                        <div class="uk-grid" data-uk-grid-margin="">
+                            <div class="uk-width-medium-1-1 uk-row-first">
+                                <label for="listagem_search">Pesquisar por CPF ou Nome</label>
+                                <input type="text" class="md-input" id="listagem_search" name="listagem_search">
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <!-- Filtro --> 
-            
+            </form>
+            <!-- Filtro -->
+
             <!-- Grid -->
             <div class="md-card">
                 <div class="md-card-content">
@@ -152,14 +155,25 @@
                 </div>
             </div>
             <ul class="uk-pagination uk-margin-medium-top uk-margin-medium-bottom">
-                <li class="uk-disabled"><span><i class="uk-icon-angle-double-left"></i></span></li>
-                <li class="uk-active"><span>1</span></li>
-                <li><a href="#">2</a></li>
-                <li><a href="#">3</a></li>
-                <li><a href="#">4</a></li>
-                <li><span>&hellip;</span></li>
-                <li><a href="#">20</a></li>
-                <li><a href="#"><i class="uk-icon-angle-double-right"></i></a></li>
+                {% if list_cliente.has_previous %}
+                    <li><a href="?page=1"><i class="uk-icon-angle-double-left"></i></a></li>
+                {% else %}
+                    <li class="uk-disabled"><span><i class="uk-icon-angle-double-left"></i></span></li>
+                {% endif %}
+                <!--<li class="uk-active"><span>1</span></li>-->
+                {% for page in list_cliente.paginator.page_range %}
+                    {% if page == num_page %}
+                        <li class="uk-active"><a href="?page={{ page }}"><span>{{ page }}</span></a></li>
+                    {% else %}
+                        <li><a href="?page={{ page }}">{{ page }}</a></li>
+                    {% endif %}
+                {% endfor %}
+                <!--<li><a href="#">2</a></li>-->
+                <!--<li><a href="#">3</a></li>-->
+                <!--<li><a href="#">4</a></li>-->
+                <!--<li><span>&hellip;</span></li>-->
+                <!--<li><a href="#">20</a></li>-->
+                <li><a href="?page={{ list_cliente.paginator.num_pages }}"><i class="uk-icon-angle-double-right"></i></a></li>
             </ul>
             <!-- Grid -->
         </div>
